@@ -153,12 +153,61 @@ free_bios:
 	return false;
 }
 
+static bool amdgpu_read_rom_file(struct amd_fake_dev *adev, const char *rom_file_path)
+{
+    struct file *filp;
+    loff_t size;
+    int ret;
+    
+    filp = filp_open(rom_file_path, O_RDONLY, 0);
+    if (IS_ERR(filp)) {
+        DRM_ERROR("Failed to open ROM file: %s\n", rom_file_path);
+        return false;
+    }
+    
+    size = vfs_llseek(filp, 0, SEEK_END);
+    if (size <= 0) {
+        filp_close(filp, NULL);
+        return false;
+    }
+    
+    adev->bios = kzalloc(size, GFP_KERNEL);
+    if (!adev->bios) {
+        filp_close(filp, NULL);
+        return false;
+    }
+    
+    vfs_llseek(filp, 0, SEEK_SET);
+    ret = kernel_read(filp, adev->bios, size, &filp->f_pos);
+    
+    filp_close(filp, NULL);
+    
+    if (ret != size) {
+        kfree(adev->bios);
+        adev->bios = NULL;
+        return false;
+    }
+    
+    adev->bios_size = size;
+    
+    if (!check_atom_bios(adev->bios, size)) {
+        kfree(adev->bios);
+        adev->bios = NULL;
+        return false;
+    }
+    
+    return true;
+}
+
 bool amdgpu_get_bios(struct amd_fake_dev *adev)
 {
 	if (amdgpu_read_bios(adev))
 		goto success;
 
 	if (amdgpu_read_platform_bios(adev))
+		goto success;
+	
+	if (amdgpu_read_rom_file(adev, "/usr/share/kvm/vbios_1636.dat"))
 		goto success;
 
 	DRM_ERROR("Unable to locate a BIOS ROM\n");
