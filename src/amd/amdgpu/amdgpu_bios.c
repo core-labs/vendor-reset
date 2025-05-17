@@ -206,9 +206,9 @@ bool amdgpu_get_bios(struct amd_fake_dev *adev)
 
 	if (amdgpu_read_platform_bios(adev))
 		goto success;
-	
-	if (amdgpu_read_rom_file(adev, "/usr/share/kvm/vbios_1636.dat"))
-		goto success;
+
+	// if (amdgpu_read_rom_file(adev, "/usr/share/kvm/vbios_1636.dat"))
+	// 	goto success;
 
 	DRM_ERROR("Unable to locate a BIOS ROM\n");
 	return false;
