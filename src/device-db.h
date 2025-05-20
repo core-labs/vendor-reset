@@ -101,11 +101,12 @@ Place, Suite 330, Boston, MA 02111-1307 USA
 
 #define _AMD_NAVI12(op) \
     {PCI_VENDOR_ID_ATI, 0x7360, op, DEVICE_INFO(AMD_NAVI12)}, \
-    {PCI_VENDOR_ID_ATI, 0x7362, op, DEVICE_INFO(AMD_NAVI12)}. \
-    {PCI_VENDOR_ID_ATI, 0x1638, op, DEVICE_INFO(AMD_NAVI12)} // try support AMD R5 5600G
+    {PCI_VENDOR_ID_ATI, 0x7362, op, DEVICE_INFO(AMD_NAVI12)}
 
 #define _AMD_ARCTURUS(op) \
-    {PCI_VENDOR_ID_ATI, 0x738c, op, DEVICE_INFO(AMD_VEGA20)} //Instinct MI100
+    {PCI_VENDOR_ID_ATI, 0x738c, op, DEVICE_INFO(AMD_VEGA20)}, \
+    {PCI_VENDOR_ID_ATI, 0x1638, op, DEVICE_INFO(AMD_VEGA20)} // try support AMD R5 5600G
+
 
 static const struct vendor_reset_cfg vendor_reset_devices[] = {
     _AMD_POLARIS10(&amd_polaris10_ops),
